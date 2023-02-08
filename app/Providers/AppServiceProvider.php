@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Microsoft\Graph\Graph;
 use League\OAuth2\Client\Provider\GenericProvider as OAuth2Client;
 
@@ -40,6 +43,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if (!Collection::hasMacro('paginate')) {
+            Collection::macro('paginate',
+                function ($perPage = 10, $page = null, $options = []) {
+                    $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+                    return (
+                        new LengthAwarePaginator(
+                            array_values($this->forPage($page, $perPage)->toArray()), $this->count(), $perPage, $page, $options
+                        )
+                    )->withPath('');
+                });
+        }
     }
 }
