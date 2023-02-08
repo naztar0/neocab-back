@@ -22,23 +22,31 @@ class SpecializationController extends Controller
         return $specialization;
     }
 
-    public function getCathedraSpecializations(Cathedra $cathedra)
+    public function getCathedraSpecializations(Cathedra $cathedra, GroupFilters $filters)
     {
-        return response($cathedra->specializations()->get());
+        $filters->apply(Specialization::class);
+        return response($cathedra->specializations()->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getProgramSpecializations(Program $program)
+    public function getProgramSpecializations(Program $program, GroupFilters $filters)
     {
-        return response($program->cathedras()->with('specializations')->get());
+        $filters->apply(Specialization::class);
+        return response($program->cathedras()->with('specializations')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getSpecialitySpecializations(Speciality $speciality)
+    public function getSpecialitySpecializations(Speciality $speciality, GroupFilters $filters)
     {
-        return response($speciality->programs()->with('cathedras.specializations')->get());
+        $filters->apply(Specialization::class);
+        return response($speciality->programs()->with('cathedras.specializations')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getFacultySpecializations(Faculty $faculty)
+    public function getFacultySpecializations(Faculty $faculty, GroupFilters $filters)
     {
-        return response($faculty->specialities()->with('programs.cathedras.specializations')->get());
+        $filters->apply(Specialization::class);
+        return response($faculty->specialities()->with('programs.cathedras.specializations')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }

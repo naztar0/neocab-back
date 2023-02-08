@@ -21,18 +21,24 @@ class CathedraController extends Controller
         return $cathedra;
     }
 
-    public function getProgramCathedras(Program $program)
+    public function getProgramCathedras(Program $program, GroupFilters $filters)
     {
-        return response($program->cathedras()->get());
+        $filters->apply(Cathedra::class);
+        return response($program->cathedras()->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getSpecialityCathedras(Speciality $speciality)
+    public function getSpecialityCathedras(Speciality $speciality, GroupFilters $filters)
     {
-        return response($speciality->programs()->with('cathedras')->get());
+        $filters->apply(Cathedra::class);
+        return response($speciality->programs()->with('cathedras')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getFacultyCathedras(Faculty $faculty)
+    public function getFacultyCathedras(Faculty $faculty, GroupFilters $filters)
     {
-        return response($faculty->specialities()->with('programs.cathedras')->get());
+        $filters->apply(Cathedra::class);
+        return response($faculty->specialities()->with('programs.cathedras')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }

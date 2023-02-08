@@ -61,33 +61,45 @@ class UserController extends Controller
         return response(tap($user)->update(['cover' => $userService->saveImage($request->image)]));
     }
 
-    public function getGroupUsers(Group $group): Response
+    public function getGroupUsers(Group $group, UserFilters $filters): Response
     {
-        return response($group->users()->get());
+        $filters->apply(User::class);
+        return response($group->users()->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getSpecializationUsers(Specialization $specialization): Response
+    public function getSpecializationUsers(Specialization $specialization, UserFilters $filters): Response
     {
-        return response($specialization->groups()->with('users')->get());
+        $filters->apply(User::class);
+        return response($specialization->groups()->with('users')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getCathedraUsers(Cathedra $cathedra): Response
+    public function getCathedraUsers(Cathedra $cathedra, UserFilters $filters): Response
     {
-        return response($cathedra->specializations()->with('groups.users')->get());
+        $filters->apply(User::class);
+        return response($cathedra->specializations()->with('groups.users')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getProgramUsers(Program $program): Response
+    public function getProgramUsers(Program $program, UserFilters $filters): Response
     {
-        return response($program->cathedras()->with('specializations.groups.users')->get());
+        $filters->apply(User::class);
+        return response($program->cathedras()->with('specializations.groups.users')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getSpecialityUsers(Speciality $speciality): Response
+    public function getSpecialityUsers(Speciality $speciality, UserFilters $filters): Response
     {
-        return response($speciality->programs()->with('cathedras.specializations.groups.users')->get());
+        $filters->apply(User::class);
+        return response($speciality->programs()->with('cathedras.specializations.groups.users')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getFacultyUsers(Faculty $faculty): Response
+    public function getFacultyUsers(Faculty $faculty, UserFilters $filters): Response
     {
-        return response($faculty->specialities()->with('programs.cathedras.specializations.groups.users')->get());
+        $filters->apply(User::class);
+        return response($faculty->specialities()->with('programs.cathedras.specializations.groups.users')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }

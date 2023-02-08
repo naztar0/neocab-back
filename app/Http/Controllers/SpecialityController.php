@@ -19,8 +19,10 @@ class SpecialityController extends Controller
         return $speciality;
     }
 
-    public function getFacultySpecialities(Faculty $faculty)
+    public function getFacultySpecialities(Faculty $faculty, GroupFilters $filters)
     {
-        return response($faculty->specialities()->get());
+        $filters->apply(Speciality::class);
+        return response($faculty->specialities()->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }

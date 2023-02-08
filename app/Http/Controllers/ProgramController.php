@@ -20,13 +20,17 @@ class ProgramController extends Controller
         return $program;
     }
 
-    public function getSpecialityPrograms(Speciality $speciality)
+    public function getSpecialityPrograms(Speciality $speciality, GroupFilters $filters)
     {
-        return response($speciality->programs()->get());
+        $filters->apply(Program::class);
+        return response($speciality->programs()->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getFacultyPrograms(Faculty $faculty)
+    public function getFacultyPrograms(Faculty $faculty, GroupFilters $filters)
     {
-        return response($faculty->specialities()->with('programs')->get());
+        $filters->apply(Program::class);
+        return response($faculty->specialities()->with('programs')->get()
+            ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }
