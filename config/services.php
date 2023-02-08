@@ -40,6 +40,7 @@ return [
         'api_sport' => env('KHPI_API_SPORT'),
         'api_schedule' => env('KHPI_API_SCHEDULE'),
         'api_docs' => env('KHPI_API_DOCS'),
+        'api_params' => env('KHPI_API_PARAMS'),
     ],
 
     'azure' => [
