@@ -24,7 +24,7 @@ class UserService
         if (!$data['image']) {
             $data['image'] = $this->azureService->getUserPhoto($user->microsoft_id);
         }
-        $data['year'] = intval($khpiData['kurs']);
+        $data['year'] = $khpiData['kurs'];
         $data['middle_name'] = $khpiData['otch'];
         $data['train_level'] = $khpiData['train_level'];
         $data['train_form'] = $khpiData['train_form'];
@@ -71,7 +71,7 @@ class UserService
         foreach ($khpiData as $item) {
             $recordBook[] = [
                 'subject' => [
-                    'id' => intval($item['subj_id']),
+                    'id' => $item['subj_id'],
                     'name' => trim($item['subject']),
                 ],
                 'professor' => trim($item['prepod']),
