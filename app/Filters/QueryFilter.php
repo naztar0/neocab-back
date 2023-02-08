@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 abstract class QueryFilter
 {
     protected Builder $builder;
-    protected string $delimiter = ',';
     public int $pageNum = 1;
     public int $itemsNum = 10;
 
@@ -30,10 +29,5 @@ abstract class QueryFilter
     public function filters()
     {
         return $this->request->query();
-    }
-
-    protected function paramToArray($param)
-    {
-        return explode($this->delimiter, $param);
     }
 }
