@@ -24,7 +24,7 @@ class User extends Authenticatable implements JWTSubject
         'id',
         'student_id',
         'telegram_id',
-        'microsoft_id',
+        'azure_id',
         'group_id',
         'email',
         'pass',

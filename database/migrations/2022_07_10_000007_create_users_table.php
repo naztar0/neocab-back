@@ -22,7 +22,7 @@ return new class () extends Migration {
             $table->string('cover')->nullable()->default(null);
             $table->unsignedBigInteger('student_id')->nullable()->default(null);
             $table->unsignedBigInteger('telegram_id')->nullable()->default(null);
-            $table->uuid('microsoft_id')->nullable()->default(null);
+            $table->uuid('azure_id')->nullable()->default(null);
             $table->foreignId('group_id')->nullable()->default(null)->constrained()->nullOnDelete();
             $table->enum('role', ['student', 'headman', 'professor', 'admin'])->default('student');
             $table->enum('locale', ['en', 'ru', 'ua'])->default('ua');
