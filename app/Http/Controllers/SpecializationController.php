@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Faculty;
 use App\Models\Speciality;
 use App\Models\Program;
-use App\Models\Cathedra;
+use App\Models\Department;
 use App\Models\Specialization;
 use App\Filters\GroupFilters;
 
@@ -22,31 +22,31 @@ class SpecializationController extends Controller
         return $specialization;
     }
 
-    public function getCathedraSpecializations(Cathedra $cathedra, GroupFilters $filters)
+    public function getDepartmentSpecializations(Department $department, GroupFilters $filters)
     {
         $filters->apply(Specialization::class);
-        return response($cathedra->specializations()->get()
+        return response($department->specializations()->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
     public function getProgramSpecializations(Program $program, GroupFilters $filters)
     {
         $filters->apply(Specialization::class);
-        return response($program->cathedras()->with('specializations')->get()
+        return response($program->departments()->with('specializations')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
     public function getSpecialitySpecializations(Speciality $speciality, GroupFilters $filters)
     {
         $filters->apply(Specialization::class);
-        return response($speciality->programs()->with('cathedras.specializations')->get()
+        return response($speciality->programs()->with('departments.specializations')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
     public function getFacultySpecializations(Faculty $faculty, GroupFilters $filters)
     {
         $filters->apply(Specialization::class);
-        return response($faculty->specialities()->with('programs.cathedras.specializations')->get()
+        return response($faculty->specialities()->with('programs.departments.specializations')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }

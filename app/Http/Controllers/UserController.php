@@ -8,7 +8,7 @@ use App\Models\User;
 use App\Models\Faculty;
 use App\Models\Speciality;
 use App\Models\Program;
-use App\Models\Cathedra;
+use App\Models\Department;
 use App\Models\Specialization;
 use App\Models\Group;
 use App\Filters\UserFilters;
@@ -75,31 +75,31 @@ class UserController extends Controller
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
-    public function getCathedraUsers(Cathedra $cathedra, UserFilters $filters): Response
+    public function getDepartmentUsers(Department $department, UserFilters $filters): Response
     {
         $filters->apply(User::class);
-        return response($cathedra->specializations()->with('groups.users')->get()
+        return response($department->specializations()->with('groups.users')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
     public function getProgramUsers(Program $program, UserFilters $filters): Response
     {
         $filters->apply(User::class);
-        return response($program->cathedras()->with('specializations.groups.users')->get()
+        return response($program->departments()->with('specializations.groups.users')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
     public function getSpecialityUsers(Speciality $speciality, UserFilters $filters): Response
     {
         $filters->apply(User::class);
-        return response($speciality->programs()->with('cathedras.specializations.groups.users')->get()
+        return response($speciality->programs()->with('departments.specializations.groups.users')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 
     public function getFacultyUsers(Faculty $faculty, UserFilters $filters): Response
     {
         $filters->apply(User::class);
-        return response($faculty->specialities()->with('programs.cathedras.specializations.groups.users')->get()
+        return response($faculty->specialities()->with('programs.departments.specializations.groups.users')->get()
             ->paginate($filters->itemsNum, $filters->pageNum));
     }
 }

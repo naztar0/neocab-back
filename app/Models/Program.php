@@ -26,8 +26,8 @@ class Program extends Model
 
     public $timestamps = false;
 
-    public function cathedras()
+    public function departments()
     {
-        return $this->hasMany(Cathedra::class);
+        return $this->hasMany(Department::class);
     }
 }

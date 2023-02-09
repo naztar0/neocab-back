@@ -6,7 +6,7 @@ use App\Models\User;
 use App\Models\Faculty;
 use App\Models\Speciality;
 use App\Models\Program;
-use App\Models\Cathedra;
+use App\Models\Department;
 use App\Models\Specialization;
 use App\Models\Group;
 
@@ -38,8 +38,8 @@ class AuthService
         $faculty = Faculty::firstOrCreate(['id' => $data['fid']], ['name' => $data['fakultet']]);
         $speciality = Speciality::firstOrCreate(['name' => $data['speciality']], ['faculty_id' => $faculty->id]);
         $program = Program::firstOrCreate(['name' => $data['osvitprog']], ['speciality_id' => $speciality->id]);
-        $cathedra = Cathedra::firstOrCreate(['id' => $data['kid']], ['name' => $data['kafedra'], 'program_id' => $program->id]);
-        $specialization = Specialization::firstOrCreate(['name' => $data['specialization']], ['cathedra_id' => $cathedra->id]);
+        $department = Department::firstOrCreate(['id' => $data['kid']], ['name' => $data['kafedra'], 'program_id' => $program->id]);
+        $specialization = Specialization::firstOrCreate(['name' => $data['specialization']], ['department_id' => $department->id]);
         $group = Group::firstOrCreate(['id' => $data['gid']], ['name' => $data['grupa'], 'specialization_id' => $specialization->id]);
         return $group->id;
     }

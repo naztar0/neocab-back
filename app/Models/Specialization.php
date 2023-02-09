@@ -16,14 +16,14 @@ class Specialization extends Model
      */
     protected $fillable = [
         'name',
-        'cathedra_id',
+        'department_id',
     ];
 
     public $timestamps = false;
 
-    public function cathedra()
+    public function department()
     {
-        return $this->belongsTo(Cathedra::class);
+        return $this->belongsTo(Department::class);
     }
 
     public function groups()

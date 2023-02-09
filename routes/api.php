@@ -5,7 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\SpecializationController;
-use App\Http\Controllers\CathedraController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\FacultyController;
@@ -55,24 +55,24 @@ Route::group(['prefix' => 'specializations'], function ($router) {
     Route::get('/{specialization}/groups', [GroupController::class, 'getSpecializationGroups']);
 });
 
-Route::group(['prefix' => 'cathedras'], function ($router) {
-    Route::get('/{cathedra}/users', [UserController::class, 'getCathedraUsers']);
-    Route::get('/{cathedra}/groups', [GroupController::class, 'getCathedraGroups']);
-    Route::get('/{cathedra}/specializations', [SpecializationController::class, 'getCathedraSpecializations']);
+Route::group(['prefix' => 'departments'], function ($router) {
+    Route::get('/{department}/users', [UserController::class, 'getDepartmentUsers']);
+    Route::get('/{department}/groups', [GroupController::class, 'getDepartmentGroups']);
+    Route::get('/{department}/specializations', [SpecializationController::class, 'getDepartmentSpecializations']);
 });
 
 Route::group(['prefix' => 'programs'], function ($router) {
     Route::get('/{program}/users', [UserController::class, 'getProgramUsers']);
     Route::get('/{program}/groups', [GroupController::class, 'getProgramGroups']);
     Route::get('/{program}/specializations', [SpecializationController::class, 'getProgramSpecializations']);
-    Route::get('/{program}/cathedras', [CathedraController::class, 'getProgramCathedras']);
+    Route::get('/{program}/departments', [DepartmentController::class, 'getProgramDepartments']);
 });
 
 Route::group(['prefix' => 'specialities'], function ($router) {
     Route::get('/{speciality}/users', [UserController::class, 'getSpecialityUsers']);
     Route::get('/{speciality}/groups', [GroupController::class, 'getSpecialityGroups']);
     Route::get('/{speciality}/specializations', [SpecializationController::class, 'getSpecialitySpecializations']);
-    Route::get('/{speciality}/cathedras', [CathedraController::class, 'getSpecialityCathedras']);
+    Route::get('/{speciality}/departments', [DepartmentController::class, 'getSpecialityDepartments']);
     Route::get('/{speciality}/programs', [ProgramController::class, 'getSpecialityPrograms']);
 });
 
@@ -80,7 +80,7 @@ Route::group(['prefix' => 'faculties'], function ($router) {
     Route::get('/{faculty}/users', [UserController::class, 'getFacultyUsers']);
     Route::get('/{faculty}/groups', [GroupController::class, 'getFacultyGroups']);
     Route::get('/{faculty}/specializations', [SpecializationController::class, 'getFacultySpecializations']);
-    Route::get('/{faculty}/cathedras', [CathedraController::class, 'getFacultyCathedras']);
+    Route::get('/{faculty}/departments', [DepartmentController::class, 'getFacultyDepartments']);
     Route::get('/{faculty}/programs', [ProgramController::class, 'getFacultyPrograms']);
     Route::get('/{faculty}/specialities', [SpecialityController::class, 'getFacultySpecialities']);
 });
@@ -89,7 +89,7 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('groups', GroupController::class);
 Route::apiResource('schedules', ScheduleController::class);
 Route::apiResource('specializations', SpecializationController::class);
-Route::apiResource('cathedras', CathedraController::class);
+Route::apiResource('departments', DepartmentController::class);
 Route::apiResource('programs', ProgramController::class);
 Route::apiResource('specialities', SpecialityController::class);
 Route::apiResource('faculties', FacultyController::class);
