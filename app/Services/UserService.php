@@ -22,7 +22,7 @@ class UserService
             return null;
         }
         if (!$data['image']) {
-            $data['image'] = $this->azureService->getUserPhoto($user->microsoft_id);
+            $data['image'] = $this->azureService->getUserPhoto($user->azure_id);
         }
         $data['year'] = $khpiData['kurs'];
         $data['middle_name'] = $khpiData['otch'];
@@ -37,21 +37,21 @@ class UserService
             'id' => $user->group->specialization->id,
             'name' => $user->group->specialization->name
         ];
-        $data['cathedra'] = [
-            'id' => $user->group->specialization->cathedra->id,
-            'name' => $user->group->specialization->cathedra->name
+        $data['department'] = [
+            'id' => $user->group->specialization->department->id,
+            'name' => $user->group->specialization->department->name
         ];
         $data['program'] = [
-            'id' => $user->group->specialization->cathedra->program->id,
-            'name' => $user->group->specialization->cathedra->program->name
+            'id' => $user->group->specialization->department->program->id,
+            'name' => $user->group->specialization->department->program->name
         ];
         $data['speciality'] = [
-            'id' => $user->group->specialization->cathedra->program->speciality->id,
-            'name' => $user->group->specialization->cathedra->program->speciality->name
+            'id' => $user->group->specialization->department->program->speciality->id,
+            'name' => $user->group->specialization->department->program->speciality->name
         ];
         $data['faculty'] = [
-            'id' => $user->group->specialization->cathedra->program->speciality->faculty->id,
-            'name' => $user->group->specialization->cathedra->program->speciality->faculty->name
+            'id' => $user->group->specialization->department->program->speciality->faculty->id,
+            'name' => $user->group->specialization->department->program->speciality->faculty->name
         ];
 
         return $data;
@@ -59,7 +59,7 @@ class UserService
 
     public function getPhoto(User $user): ?string
     {
-        return $this->azureService->getUserPhoto($user->microsoft_id, 240);
+        return $this->azureService->getUserPhoto($user->azure_id, 240);
     }
 
     public function getRecordBook(User $user, int $semester): array
@@ -75,7 +75,7 @@ class UserService
                     'name' => trim($item['subject']),
                 ],
                 'professor' => trim($item['prepod']),
-                'cathedra' => [
+                'department' => [
                     'full' => trim($item['kafedra']),
                     'short' => trim($item['kabr']),
                 ],
@@ -98,7 +98,7 @@ class UserService
                     'name' => trim($item['subject']),
                 ],
                 'professor' => trim($item['prepod']),
-                'cathedra' => [
+                'department' => [
                     'full' => trim($item['kafedra']),
                     'short' => trim($item['kabr']),
                 ],
@@ -147,7 +147,7 @@ class UserService
                     'id' => intval($item['subj_id']),
                     'name' => trim($item['subject']),
                 ],
-                'cathedra' => [
+                'department' => [
                     'full' => trim($item['kafedra']),
                     'short' => trim($item['kabr']),
                 ],

@@ -52,7 +52,7 @@ class AuthController extends Controller
 
             User::updateOrCreate(
                 ['email' => strtolower($user->getMail())],
-                ['microsoft_id' => $user->getId(), 'email' => strtolower($user->getMail())]
+                ['azure_id' => $user->getId(), 'email' => strtolower($user->getMail())]
             );
 
             return redirect(config('services.app.url') . '/login?ms=1');
@@ -70,7 +70,7 @@ class AuthController extends Controller
         }
         session()->invalidate();
 
-        if (!$user = User::where('microsoft_id', $user_id)->first()) {
+        if (!$user = User::where('azure_id', $user_id)->first()) {
             return response(['error' => 'Unauthorized'], 401);
         }
         if (!$user->student_id && in_array($user->role, [User::ROLE_STUDENT, User::ROLE_HEADMAN])) {
