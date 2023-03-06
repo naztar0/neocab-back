@@ -8,10 +8,7 @@ use App\Models\User;
 
 class UserService
 {
-    public function __construct(
-        private readonly KhpiApiService  $khpiService,
-        private readonly AzureApiService $azureService,
-    )
+    public function __construct(private readonly AzureApiService $azureService)
     {
     }
 
