@@ -19,6 +19,8 @@ class Subject extends Model
         'title',
         'notes',
         'professor_id',
+        'department_id',
+        'professor',        // backward compatibility
     ];
 
     public function professor()
