@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Rating;
 use Illuminate\Http\UploadedFile;
 use App\Models\User;
 
@@ -16,45 +17,13 @@ class UserService
 
     public function getProfile(User $user): ?array
     {
-        $data = $user->toArray();
-        $khpiData = $this->khpiService->page1($user);
-        if (!$khpiData) {
-            return null;
+        $profile = $user->with('group.specialization.department.program.speciality.faculty')
+            ->where('id', $user->id)->first()->toArray();
+        if (!$profile['image'] && $user->azure_id) {
+            $profile['image'] = $this->azureService->getUserPhoto($user->azure_id);
         }
-        if (!$data['image']) {
-            $data['image'] = $this->azureService->getUserPhoto($user->azure_id);
-        }
-        $data['year'] = $khpiData['kurs'];
-        $data['middle_name'] = $khpiData['otch'];
-        $data['train_level'] = $khpiData['train_level'];
-        $data['train_form'] = $khpiData['train_form'];
-        $data['payment'] = $khpiData['oplata'];
-        $data['group'] = [
-            'id' => $user->group->id,
-            'name' => $user->group->name
-        ];
-        $data['specialization'] = [
-            'id' => $user->group->specialization->id,
-            'name' => $user->group->specialization->name
-        ];
-        $data['department'] = [
-            'id' => $user->group->specialization->department->id,
-            'name' => $user->group->specialization->department->name
-        ];
-        $data['program'] = [
-            'id' => $user->group->specialization->department->program->id,
-            'name' => $user->group->specialization->department->program->name
-        ];
-        $data['speciality'] = [
-            'id' => $user->group->specialization->department->program->speciality->id,
-            'name' => $user->group->specialization->department->program->speciality->name
-        ];
-        $data['faculty'] = [
-            'id' => $user->group->specialization->department->program->speciality->faculty->id,
-            'name' => $user->group->specialization->department->program->speciality->faculty->name
-        ];
 
-        return $data;
+        return $profile;
     }
 
     public function getPhoto(User $user): ?string
@@ -64,77 +33,29 @@ class UserService
 
     public function getRecordBook(User $user, int $semester): array
     {
-        $data = [];
-        $recordBook = [];
-        $debts = [];
-        $khpiData = $this->khpiService->page2($user, $semester);
-        foreach ($khpiData as $item) {
-            $recordBook[] = [
-                'subject' => [
-                    'id' => $item['subj_id'],
-                    'name' => trim($item['subject']),
-                ],
-                'professor' => trim($item['prepod']),
-                'department' => [
-                    'full' => trim($item['kafedra']),
-                    'short' => trim($item['kabr']),
-                ],
-                'individual_task' => $item['indzav'],
-                'mark_5' => $item['oc_short'],
-                'mark_100' => $item['oc_bol'],
-                'mark_ects' => $item['oc_ects'],
-                'mark_national' => $item['oc_naz'],
-                'credit' => $item['credit'],
-                'control' => $item['control'],
-                'debt' => $item['if_hvost'],
-            ];
-        }
-
-        $khpiData = $this->khpiService->page3($user);
-        foreach ($khpiData as $item) {
-            $debts[] = [
-                'subject' => [
-                    'id' => intval($item['subj_id']),
-                    'name' => trim($item['subject']),
-                ],
-                'professor' => trim($item['prepod']),
-                'department' => [
-                    'full' => trim($item['kafedra']),
-                    'short' => trim($item['kabr']),
-                ],
-                'individual_task' => $item['indzav'],
-                'semester' => intval($item['semestr']),
-                'credit' => $item['credit'],
-                'control' => $item['control'],
-                'date' => $item['data'],
-            ];
-        }
-
-        $data['record_book'] = $recordBook;
-        $data['debts'] = $debts;
-
-        return $data;
+        return $user->recordBooks()->with('syllabus.subject.department')
+            ->whereHas('syllabus', function ($query) use ($semester) {
+                $query->where('semester', $semester);
+            })->get()->toArray();
     }
 
     public function getRating(User $user, int $semester): array
     {
-        $data = [];
-        $khpiData = $this->khpiService->page5($user, $semester);
-        foreach ($khpiData as $item) {
-            $data[] = [
-                'student' => [
-                    'id' => intval($item['studid']),
-                    'name' => trim($item['fio'])
-                ],
-                'group' => $item['group'],
-                'position' => $item['n'],
-                'mark_5' => $item['sbal5'],
-                'mark_100' => $item['sbal100'],
-                'calculation' => $item['rating'],
-            ];
+        $speciality_id = $user->group->specialization->department->program->speciality->id;
+        $result = Rating::query()->where('semester', $semester)
+            ->with('user.group.specialization.department.program.speciality')
+            ->where(function($query) use ($speciality_id) {
+                $query->whereHas('user.group.specialization.department.program.speciality', function($q) use ($speciality_id) {
+                    $q->where('id', $speciality_id);
+                })->orWhere('speciality_id', $speciality_id);
+            })
+            ->orderBy('mark', 'desc')->get()->toArray();
+
+        if ($user->payment == User::PAYMENT_CONTRACT) {
+            $result = $this->getContractRating($user, $semester, $result);
         }
 
-        return $data;
+        return $result;
     }
 
     public function getSyllabus(User $user, int $semester): array
@@ -182,5 +103,39 @@ class UserService
         $imageName = $image->hashName();
         $image->move(public_path('storage/images'), $imageName);
         return $imageName;
+    }
+
+    private function getContractRating(User $user, int $semester, array $result): array
+    {
+        $user_record_book = $user->recordBooks()->with('syllabus.subject.department')
+            ->whereHas('syllabus', function ($query) use ($semester) {
+                $query->where('semester', $semester);
+            })->get();
+        $total_credits = $user_record_book->sum('syllabus.credit');
+
+        if (!$total_credits) {
+            return $result;
+        }
+
+        $coefficient = 0.9;
+        $total_mark = 0;
+        $comment = '(';
+
+        foreach ($user_record_book as $record) {
+            $total_mark += ($record->mark ?? 0) * $record->syllabus->credit;
+            $comment .= " ($record->mark × " . $record->syllabus->credit . ') +';
+        }
+
+        $comment = substr($comment, 0, -1) . ") × $coefficient / $total_credits";
+        $total_mark = round($total_mark * $coefficient / $total_credits, 2);
+        $data = ['user_id' => $user->id, 'mark' => strval($total_mark), 'comment' => $comment];
+
+        for ($i = 0; $i < count($result); $i++) {
+            if ($result[$i]['mark'] <= $total_mark) {
+                break;
+            }
+        }
+
+        return array_merge(array_slice($result, 0, $i), [$data], array_slice($result, $i));
     }
 }
