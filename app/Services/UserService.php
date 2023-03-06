@@ -57,27 +57,8 @@ class UserService
 
     public function getSyllabus(User $user, int $semester): array
     {
-        $data = [];
-        $khpiData = $this->khpiService->page4($user, $semester);
-        foreach ($khpiData as $item) {
-            $data[] = [
-                'subject' => [
-                    'id' => intval($item['subj_id']),
-                    'name' => trim($item['subject']),
-                ],
-                'department' => [
-                    'full' => trim($item['kafedra']),
-                    'short' => trim($item['kabr']),
-                ],
-                'individual_task' => $item['indzav'],
-                'credit' => $item['credit'],
-                'control' => $item['control'],
-                'semester' => $item['semestr'],
-                'hours' => $item['audit'],
-            ];
-        }
-
-        return $data;
+        return $user->group->syllabuses()->with('subject.department')
+            ->where('semester', $semester)->get()->toArray();
     }
 
     public function getAzureSchedule(User $user): array
