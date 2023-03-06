@@ -23,6 +23,6 @@ class GroupFilters extends QueryFilter
     }
     public function perPage($num)
     {
-        $this->itemsNum = $num;
+        $this->itemsNum = ($num ?: 1) > 100 ? 100 : $num;
     }
 }
