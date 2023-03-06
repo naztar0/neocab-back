@@ -94,7 +94,7 @@ class AuthController extends Controller
     {
         $request->validate([
             'email' => 'required|string|email',
-            'password' => 'required|string',
+            'password' => 'required|string|regex:/^[a-zA-Z0-9]{4,8}$/',
         ]);
         $credentials = $request->only('email', 'password');
         $credentials['email'] = strtolower($credentials['email']);
@@ -102,14 +102,14 @@ class AuthController extends Controller
 
         $user = User::where(['email' => $credentials['email'], 'pass' => $credentials['pass']])->first();
         if (!$user) {
-            $user = $this->authService->createUser($credentials);
+            if ($this->authService->checkAuthValidationRequest($credentials)) {
+                return response(['message' => 'Pending validation'], 403);
+            } else {
+                return response(['message' => 'Unauthorized'], 401);
+            }
         }
-        if (!$user || !$token = $this->jwt->fromUser($user)) {
-            return response([
-                'status' => 'error',
-                'message' => 'Unauthorized',
-            ], 401);
-        }
+
+        $token = $this->jwt->fromUser($user);
 
         return response([
                 'status' => 'success',
