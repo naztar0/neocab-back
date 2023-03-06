@@ -36,4 +36,9 @@ class Group extends Model
     {
         return $this->hasMany(Schedule::class);
     }
+
+    public function syllabuses()
+    {
+        return $this->hasMany(Syllabus::class);
+    }
 }
