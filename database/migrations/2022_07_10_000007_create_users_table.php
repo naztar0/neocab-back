@@ -18,6 +18,7 @@ return new class () extends Migration {
             $table->string('pass')->nullable()->default(null);
             $table->string('first_name')->nullable()->default(null);
             $table->string('last_name')->nullable()->default(null);
+            $table->string('middle_name')->nullable()->default(null);
             $table->string('image')->nullable()->default(null);
             $table->string('cover')->nullable()->default(null);
             $table->unsignedBigInteger('student_id')->nullable()->default(null);
@@ -26,8 +27,13 @@ return new class () extends Migration {
             $table->foreignId('group_id')->nullable()->default(null)->constrained()->nullOnDelete();
             $table->enum('role', ['student', 'headman', 'professor', 'admin'])->default('student');
             $table->enum('locale', ['en', 'ru', 'ua'])->default('ua');
+            $table->unsignedSmallInteger('year')->nullable()->default(null);
+            $table->enum('train_level', ['bachelor', 'master'])->nullable()->default(null);
+            $table->enum('train_form', ['full-time', 'extramural'])->nullable()->default(null);
+            $table->enum('payment', ['budget', 'contract'])->nullable()->default(null);
             $table->rememberToken();
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

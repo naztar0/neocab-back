@@ -14,10 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('subjects', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id')->primary();
             $table->string('title');
             $table->string('notes')->nullable()->default(null);
-            $table->foreignId('professor_id')->constrained('users');
+            $table->foreignId('professor_id')->nullable()->default(null)->constrained('users')->cascadeOnDelete();
+            $table->foreignId('department_id')->nullable()->default(null)->constrained()->cascadeOnDelete();
+            $table->string('professor')->nullable()->default(null);
         });
     }
 
