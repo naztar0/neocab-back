@@ -13,6 +13,11 @@ use App\Filters\GroupFilters;
 
 class GroupController extends Controller
 {
+    public function show(Group $group): Response
+    {
+        return response($group);
+    }
+
     public function index(GroupFilters $filters): Response
     {
         return response($filters->apply(Group::class)
