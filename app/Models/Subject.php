@@ -31,5 +31,10 @@ class Subject extends Model
         return $this->hasMany(ScheduleSubject::class);
     }
 
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
     public $timestamps = false;
 }
