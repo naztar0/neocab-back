@@ -56,6 +56,19 @@ class User extends Authenticatable implements JWTSubject
     public const ROLE_PROFESSOR = 'professor';
     public const ROLE_ADMIN = 'admin';
 
+    public const LOCALE_EN = 'en';
+    public const LOCALE_RU = 'ru';
+    public const LOCALE_UA = 'ua';
+
+    public const TRAIN_LEVEL_BACHELOR = 'bachelor';
+    public const TRAIN_LEVEL_MASTER = 'master';
+
+    public const TRAIN_FORM_FULL_TIME = 'full-time';
+    public const TRAIN_FORM_EXTRAMURAL = 'extramural';
+
+    public const PAYMENT_BUDGET = 'budget';
+    public const PAYMENT_CONTRACT = 'contract';
+
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);
