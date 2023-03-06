@@ -42,6 +42,15 @@ services:
       - ./docker/dev/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - app-net
+  cache:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "${FORWARD_REDIS_PORT:-6379}:6379"
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    networks:
+      - app-net
 networks:
   app-net:
     driver: bridge
