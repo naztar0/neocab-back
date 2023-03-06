@@ -25,6 +25,9 @@ class UserService
 
     public function getPhoto(User $user): ?string
     {
+        if (!$user->azure_id) {
+            return $user->image;
+        }
         return $this->azureService->getUserPhoto($user->azure_id, 240);
     }
 
