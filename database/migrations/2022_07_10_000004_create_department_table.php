@@ -15,7 +15,7 @@ return new class () extends Migration {
         Schema::create('departments', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->string('name');
-            $table->foreignId('program_id')->constrained();
+            $table->foreignId('program_id')->constrained()->cascadeOnDelete();
         });
     }
 

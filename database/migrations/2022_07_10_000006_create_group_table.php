@@ -15,7 +15,7 @@ return new class () extends Migration {
         Schema::create('groups', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->primary();
             $table->string('name');
-            $table->foreignId('specialization_id')->constrained();
+            $table->foreignId('specialization_id')->constrained()->cascadeOnDelete();
         });
     }
 

@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('time');
             $table->unsignedTinyInteger('day');
-            $table->foreignId('subject_id')->constrained();
-            $table->foreignId('schedule_id')->constrained();
+            $table->foreignId('subject_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('schedule_id')->constrained()->cascadeOnDelete();
         });
     }
 

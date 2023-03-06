@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedTinyInteger('week');
             $table->string('description')->nullable()->default(null);
-            $table->foreignId('group_id')->constrained();
+            $table->foreignId('group_id')->constrained()->cascadeOnDelete();
         });
     }
 
