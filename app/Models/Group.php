@@ -32,7 +32,7 @@ class Group extends Model
         return $this->hasMany(User::class);
     }
 
-    public function schedule()
+    public function schedules()
     {
         return $this->hasMany(Schedule::class);
     }
