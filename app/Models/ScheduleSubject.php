@@ -18,6 +18,7 @@ class ScheduleSubject extends Model
         'id',
         'time',
         'day',
+        'notes',
         'schedule_id',
         'subject_id',
     ];
@@ -30,6 +31,11 @@ class ScheduleSubject extends Model
     public function subject()
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    public function attendanceLogs()
+    {
+        return $this->hasMany(AttendanceLog::class);
     }
 
     public $timestamps = false;
