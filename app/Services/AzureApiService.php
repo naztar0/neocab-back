@@ -6,6 +6,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model\User as GraphUser;
+use Microsoft\Graph\Model\Event as GraphEvent;
 use Illuminate\Support\Facades\Cache;
 use App\Models\User;
 
@@ -59,7 +60,7 @@ class AzureApiService
     {
         try {
             return 'data:image/jpeg;base64,' . base64_encode(
-                $this->app->createRequest('GET', "/users/$id/photos/{$size}x{$size}/\$value")
+                $this->app->createRequest('GET', "/users/$id/photos/{$size}x$size/\$value")
                 ->execute()->getRawBody());
         } catch (GuzzleException $e) {
             if ($e->getCode() === 404) {
@@ -72,12 +73,20 @@ class AzureApiService
 
     public function getUserCalendarEvents(User $user): array
     {
-        $user = $this->getUser($user->microsof_id);
-        $calendar = $user->getCalendar();
-        if (!$calendar) {
-            return [];
-        }
+        $start = now()->subWeek()->startOfWeek()->toIso8601String();
+        $end = now()->addWeeks(2)->endOfWeek()->toIso8601String();
+        $params = [
+            '$select' => 'subject,start,end,attendees,onlineMeeting',
+            '$filter' => 'isCancelled eq false',
+            '$orderby' => 'start/dateTime asc',
+            '$top' => 100,
+            'startDateTime' => $start,
+            'endDateTime' => $end,
+        ];
+        $calendar = $this->app->createRequest('GET',
+            "/users/$user->azure_id/calendar/calendarView?".http_build_query($params))
+            ->setReturnType(GraphEvent::class)->execute();
 
-        return $calendar->getCalendarView();
+        return $calendar ?: [];
     }
 }
