@@ -35,14 +35,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
-    'khpi' => [
-        'api_main' => env('KHPI_API_MAIN'),
-        'api_sport' => env('KHPI_API_SPORT'),
-        'api_schedule' => env('KHPI_API_SCHEDULE'),
-        'api_docs' => env('KHPI_API_DOCS'),
-        'api_params' => env('KHPI_API_PARAMS'),
-    ],
-
     'azure' => [
         'client_id' => env('AZURE_CLIENT_ID'),
         'client_secret' => env('AZURE_CLIENT_SECRET'),
