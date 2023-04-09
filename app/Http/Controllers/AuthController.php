@@ -13,6 +13,7 @@ use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model;
 use App\Services\AuthService;
 use App\Models\User;
+use App\Http\Requests\LoginUserRequest;
 
 class AuthController extends Controller
 {
@@ -90,12 +91,8 @@ class AuthController extends Controller
         ]);
     }
 
-    public function loginViaCabinet(Request $request): Response
+    public function loginViaCabinet(LoginUserRequest $request): Response
     {
-        $request->validate([
-            'email' => 'required|string|email',
-            'password' => 'required|string|regex:/^[a-zA-Z0-9]{4,8}$/',
-        ]);
         $credentials = $request->only('email', 'password');
         $credentials['email'] = strtolower($credentials['email']);
         $credentials['pass'] = $credentials['password'];
