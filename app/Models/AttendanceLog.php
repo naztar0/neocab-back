@@ -18,7 +18,13 @@ class AttendanceLog extends Model
         'id',
         'user_id',
         'schedule_subject_id',
+        'date',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function scheduleSubject()
     {
