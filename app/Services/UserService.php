@@ -14,8 +14,7 @@ class UserService
 
     public function getProfile(User $user): ?array
     {
-        $profile = $user->with('group.specialization.department.program.speciality.faculty')
-            ->where('id', $user->id)->first()->toArray();
+        $profile = $user->load('group.specialization.department.program.speciality.faculty')->toArray();
         if (!$profile['image'] && $user->azure_id) {
             $profile['image'] = $this->azureService->getUserPhoto($user->azure_id);
         }
