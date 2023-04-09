@@ -69,10 +69,21 @@ class UserService
         $schedule = [];
         $events = $this->azureService->getUserCalendarEvents($user);
         foreach ($events as $event) {
+            $organizer = '';
+            foreach ($event->getAttendees() as $attendee) {
+                $name = $attendee['emailAddress']['name'];
+                if ($attendee['type'] == 'required' && count(explode(' ', $name)) == 3) {
+                    $organizer = $name;
+                    break;
+                }
+            }
+            $joinUrl = $event->getOnlineMeeting() ? $event->getOnlineMeeting()->getJoinUrl() : null;
             $schedule[] = [
                 'subject' => $event->getSubject(),
                 'start' => $event->getStart()->getDateTime(),
                 'end' => $event->getEnd()->getDateTime(),
+                'organizer' => $organizer,
+                'joinUrl' => $joinUrl,
             ];
         }
 
