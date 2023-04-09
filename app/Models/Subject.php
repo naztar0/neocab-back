@@ -20,7 +20,7 @@ class Subject extends Model
         'notes',
         'professor_id',
         'department_id',
-        'professor',        // backward compatibility
+        'professor_name',        // backward compatibility
     ];
 
     public function professor()
