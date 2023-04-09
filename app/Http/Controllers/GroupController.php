@@ -24,11 +24,6 @@ class GroupController extends Controller
             ->paginate($filters->itemsNum, ['*'], 'page', $filters->pageNum));
     }
 
-    public function getSchedules(Group $group): Response
-    {
-        return response($group->schedules()->get());
-    }
-
     public function getSpecializationGroups(Specialization $specialization, GroupFilters $filters)
     {
         $filters->apply(Group::class);
