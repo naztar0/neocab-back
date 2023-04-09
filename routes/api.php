@@ -10,6 +10,9 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\SpecialityController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\ScheduleSubjectsController;
+use App\Http\Controllers\AttendanceLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -106,3 +109,7 @@ Route::apiResource('departments', DepartmentController::class);
 Route::apiResource('programs', ProgramController::class);
 Route::apiResource('specialities', SpecialityController::class);
 Route::apiResource('faculties', FacultyController::class);
+Route::apiResource('schedules', ScheduleController::class);
+Route::apiResource('subjects', SubjectController::class);
+Route::apiResource('schedule-subjects', ScheduleSubjectsController::class);
+Route::apiResource('attendance-logs', AttendanceLogController::class);
