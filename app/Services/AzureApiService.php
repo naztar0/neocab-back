@@ -4,6 +4,7 @@ namespace App\Services;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Microsoft\Graph\Exception\GraphException;
 use Microsoft\Graph\Graph;
 use Microsoft\Graph\Model\User as GraphUser;
 use Microsoft\Graph\Model\Event as GraphEvent;
@@ -56,10 +57,13 @@ class AzureApiService
             ->execute();
     }
 
-    public function getUserPhoto(string $id, int $size=48): ?string
+    /**
+     * @throws GraphException
+     */
+    public function getUserPhoto(string $id, int $size=240): ?string
     {
         try {
-            return 'data:image/jpeg;base64,' . base64_encode(
+            return base64_encode(
                 $this->app->createRequest('GET', "/users/$id/photos/{$size}x$size/\$value")
                 ->execute()->getRawBody());
         } catch (GuzzleException $e) {
