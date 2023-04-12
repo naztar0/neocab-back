@@ -13,6 +13,7 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScheduleSubjectsController;
 use App\Http\Controllers\AttendanceLogController;
+use App\Http\Controllers\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,7 @@ Route::group(['prefix' => 'users'], function ($router) {
     $router->post('/{user}/avatar', [UserController::class, 'uploadAvatar']);
     $router->post('/{user}/cover', [UserController::class, 'uploadCover']);
     $router->post('/{user}/attendance/{scheduleSubject}', [AttendanceLogController::class, 'switchAttendanceLog']);
+    $router->post('/{user}/notifications', [NotificationController::class, 'createUserNotification']);
 });
 
 Route::group(['prefix' => 'groups'], function ($router) {
@@ -65,6 +67,10 @@ Route::group(['prefix' => 'schedules'], function ($router) {
 
 Route::group(['prefix' => 'schedule-subjects'], function ($router) {
     $router->get('/{scheduleSubject}/attendance', [AttendanceLogController::class, 'getScheduleSubjectAttendanceLogs']);
+});
+
+Route::group(['prefix' => 'notifications'], function ($router) {
+    $router->post('/{notification}/read', [NotificationController::class, 'markAsReadNotification']);
 });
 
 Route::group(['prefix' => 'specializations'], function ($router) {
@@ -113,3 +119,4 @@ Route::apiResource('schedules', ScheduleController::class);
 Route::apiResource('subjects', SubjectController::class);
 Route::apiResource('schedule-subjects', ScheduleSubjectsController::class);
 Route::apiResource('attendance-logs', AttendanceLogController::class);
+Route::apiResource('notifications', NotificationController::class);
