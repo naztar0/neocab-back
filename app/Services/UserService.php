@@ -111,7 +111,7 @@ class UserService
     public function saveImage(UploadedFile $image): string
     {
         $imageName = $image->hashName();
-        $image->move(public_path('storage/images'), $imageName);
+        $image->move(storage_path('app/public/images'), $imageName);
         return $imageName;
     }
 
