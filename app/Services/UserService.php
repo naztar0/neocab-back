@@ -24,19 +24,29 @@ class UserService
     public function getProfile(User $user): ?array
     {
         $profile = $user->load('group.specialization.department.program.speciality.faculty')->toArray();
-        if (!$profile['image'] && $user->azure_id) {
-            $profile['image'] = $this->azureService->getUserPhoto($user->azure_id);
+
+        if (!$profile['image']) {
+            $profile['image'] = $this->syncPhoto($user);
         }
 
         return $profile;
     }
 
-    public function getPhoto(User $user): ?string
+    public function syncPhoto(User $user): ?string
     {
         if (!$user->azure_id) {
-            return $user->image;
+            return null;
         }
-        return $this->azureService->getUserPhoto($user->azure_id, 240);
+        try {
+            if ($imageStr = $this->azureService->getUserPhoto($user->azure_id)) {
+                $image = $this->saveBase64Image($imageStr);
+                $user->update(['image' => $image]);
+                return $image;
+            }
+            throw new GraphException(null);
+        } catch (GraphException) {
+            return null;
+        }
     }
 
     public function getRecordBook(User $user, int $semester): array
