@@ -47,6 +47,7 @@ Route::group(['prefix' => 'users'], function ($router) {
     $router->get('/{user}/syllabus/{semester}', [UserController::class, 'getSyllabus']);
     $router->get('/{user}/azure-schedule', [ScheduleController::class, 'getAzureSchedule']);
     $router->get('/{user}/attendance', [AttendanceLogController::class, 'getUserAttendanceLogs']);
+    $router->get('/{user}/notifications', [NotificationController::class, 'getUserNotifications']);
     $router->post('/{user}/avatar', [UserController::class, 'uploadAvatar']);
     $router->post('/{user}/cover', [UserController::class, 'uploadCover']);
     $router->post('/{user}/attendance/{scheduleSubject}', [AttendanceLogController::class, 'switchAttendanceLog']);
