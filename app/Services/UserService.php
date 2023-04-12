@@ -6,12 +6,14 @@ use App\Filters\AttendanceFilters;
 use App\Models\AttendanceLog;
 use App\Models\Group;
 use App\Models\Rating;
-use App\Models\ScheduleSubject;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Microsoft\Graph\Exception\GraphException;
 
 class UserService
 {
@@ -100,6 +102,15 @@ class UserService
     {
         $imageName = $image->hashName();
         $image->move(public_path('storage/images'), $imageName);
+        return $imageName;
+    }
+
+    private function saveBase64Image(string $base64): string
+    {
+        $image = base64_decode($base64);
+        $imageName = Str::random(40) . '.jpg';
+        $path = "images/$imageName";
+        Storage::disk('public')->put($path, $image);
         return $imageName;
     }
 
