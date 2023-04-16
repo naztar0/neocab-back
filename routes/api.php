@@ -14,6 +14,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\ScheduleSubjectsController;
 use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\FaqItemController;
 
 /*
 |--------------------------------------------------------------------------
@@ -74,6 +75,10 @@ Route::group(['prefix' => 'notifications'], function ($router) {
     $router->post('/{notification}/read', [NotificationController::class, 'markAsReadNotification']);
 });
 
+Route::group(['prefix' => 'faq-items'], function ($router) {
+    $router->get('/{lang}', [FaqItemController::class, 'getFaqsByLang']);
+});
+
 Route::group(['prefix' => 'specializations'], function ($router) {
     $router->get('/{specialization}/users', [UserController::class, 'getSpecializationUsers']);
     $router->get('/{specialization}/groups', [GroupController::class, 'getSpecializationGroups']);
@@ -121,3 +126,4 @@ Route::apiResource('subjects', SubjectController::class);
 Route::apiResource('schedule-subjects', ScheduleSubjectsController::class);
 Route::apiResource('attendance-logs', AttendanceLogController::class);
 Route::apiResource('notifications', NotificationController::class);
+Route::apiResource('faq-items', FaqItemController::class);
