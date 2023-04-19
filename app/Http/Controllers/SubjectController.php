@@ -15,6 +15,8 @@ class SubjectController extends Controller
 
     public function getGroupSubjects(Group $group, int $semester): Response
     {
+        $this->authorize('getGroupSubjects', $group);
+
         return response($group->syllabuses()->where('semester', $semester)->get()
             ->load('subject')->pluck('subject'));
     }

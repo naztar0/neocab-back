@@ -14,16 +14,19 @@ class FaqItemController extends Controller
 
     public function store(): Response
     {
+        $this->authorize(FaqItem::class);
         return response(FaqItem::query()->create(request()->all()));
     }
 
     public function update(FaqItem $faqItem): Response
     {
+        $this->authorize($faqItem);
         return response(tap($faqItem)->update(request()->all()));
     }
 
     public function destroy(FaqItem $faqItem): Response
     {
+        $this->authorize($faqItem);
         return response($faqItem->delete());
     }
 

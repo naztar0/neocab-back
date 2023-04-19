@@ -32,31 +32,37 @@ class UserController extends Controller
 
     public function getRecordBook(User $user, int $semester): Response
     {
+        $this->authorize('view', $user);
         return response($this->service->getRecordBook($user, $semester));
     }
 
     public function getRating(User $user, int $semester): Response
     {
+        $this->authorize('view', $user);
         return response($this->service->getRating($user, $semester));
     }
 
     public function getSyllabus(User $user, int $semester): Response
     {
+        $this->authorize('view', $user);
         return response($this->service->getSyllabus($user, $semester));
     }
 
     public function uploadAvatar(UploadImageRequest $request, User $user, UserService $userService): Response
     {
+        $this->authorize('update', $user);
         return response(tap($user)->update(['image' => $userService->saveImage($request->image)]));
     }
 
     public function uploadCover(UploadImageRequest $request, User $user, UserService $userService): Response
     {
+        $this->authorize('update', $user);
         return response(tap($user)->update(['cover' => $userService->saveImage($request->image)]));
     }
 
     public function syncPhoto(User $user): Response
     {
+        $this->authorize('update', $user);
         return response($this->service->syncPhoto($user));
     }
 
