@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('notes')->nullable()->default(null);
             $table->foreignId('professor_id')->nullable()->default(null)->constrained('users')->cascadeOnDelete();
             $table->foreignId('department_id')->nullable()->default(null)->constrained()->cascadeOnDelete();
-            $table->string('professor')->nullable()->default(null);
+            $table->string('professor_name')->nullable()->default(null);
         });
     }
 
