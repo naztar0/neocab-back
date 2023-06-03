@@ -36,7 +36,7 @@ class AzureApiService
                         'grant_type' => 'client_credentials',
                     ],
                 ]);
-            } catch (GuzzleException $e) {
+            } catch (GuzzleException) {
                 return null;
             }
 
