@@ -163,7 +163,8 @@ class UserService
         $startDate = now()->startOfYear();
         $result = [];
         $result['attendance'] = $user->attendanceLogs()->with('scheduleSubject.subject')
-            ->where('date', '>=', $startDate)->get()->toArray();
+            ->where('date', '>=', $startDate)
+            ->orderByDesc('date')->get()->toArray();
 
         $result['history'] = $user->attendanceLogs()->select('date', DB::raw('COUNT(*) as count'))
             ->where('date', '>=', $startDate)
