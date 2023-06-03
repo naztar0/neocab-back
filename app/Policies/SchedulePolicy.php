@@ -39,6 +39,6 @@ class SchedulePolicy
     {
         return $user->role == USER::ROLE_ADMIN ||
             $user->role == USER::ROLE_HEADMAN && $user->group_id == $schedule->group_id &&
-            $user->group->specialization->department_id == $subject->department_id;
+            (!$subject->department_id || $user->group->specialization->department_id == $subject->department_id);
     }
 }
