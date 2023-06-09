@@ -59,13 +59,15 @@ class UserService
 
     public function getRating(User $user, int $semester): array
     {
-        $speciality_id = $user->group->specialization->department->program->speciality->id;
+        $specialityId = $user->group->specialization->department->program->speciality->id;
         $result = Rating::query()->where('semester', $semester)
             ->with('user.group.specialization.department.program.speciality')
-            ->where(function($query) use ($speciality_id) {
-                $query->whereHas('user.group.specialization.department.program.speciality', function($q) use ($speciality_id) {
-                    $q->where('id', $speciality_id);
-                })->orWhere('speciality_id', $speciality_id);
+            ->where(function($query) use ($specialityId) {
+                $query->whereHas(
+                    'user.group.specialization.department.program.speciality',
+                    function($q) use ($specialityId) {
+                        $q->where('id', $specialityId);
+                    })->orWhere('speciality_id', $specialityId);
             })
             ->orderBy('mark', 'desc')->get()->toArray();
 
@@ -126,31 +128,31 @@ class UserService
 
     private function getContractRating(User $user, int $semester, array $result): array
     {
-        $user_record_book = $user->recordBooks()->with('syllabus.subject.department')
+        $userRecordBook = $user->recordBooks()->with('syllabus.subject.department')
             ->whereHas('syllabus', function ($query) use ($semester) {
                 $query->where('semester', $semester);
             })->get();
-        $total_credits = $user_record_book->sum('syllabus.credit');
+        $totalCredits = $userRecordBook->sum('syllabus.credit');
 
-        if (!$total_credits) {
+        if (!$totalCredits) {
             return $result;
         }
 
         $coefficient = 0.9;
-        $total_mark = 0;
+        $totalMark = 0;
         $comment = '(';
 
-        foreach ($user_record_book as $record) {
-            $total_mark += ($record->mark ?? 0) * $record->syllabus->credit;
+        foreach ($userRecordBook as $record) {
+            $totalMark += ($record->mark ?? 0) * $record->syllabus->credit;
             $comment .= " ($record->mark × " . $record->syllabus->credit . ') +';
         }
 
-        $comment = substr($comment, 0, -1) . ") × $coefficient / $total_credits";
-        $total_mark = round($total_mark * $coefficient / $total_credits, 2);
-        $data = ['user_id' => $user->id, 'mark' => strval($total_mark), 'comment' => $comment];
+        $comment = substr($comment, 0, -1) . ") × $coefficient / $totalCredits";
+        $totalMark = round($totalMark * $coefficient / $totalCredits, 2);
+        $data = ['user_id' => $user->id, 'mark' => strval($totalMark), 'comment' => $comment];
 
         for ($i = 0; $i < count($result); $i++) {
-            if ($result[$i]['mark'] <= $total_mark) {
+            if ($result[$i]['mark'] <= $totalMark) {
                 break;
             }
         }
