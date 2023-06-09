@@ -21,6 +21,7 @@ docker-compose up -d
 
 ```
 docker-compose exec app php artisan jwt:secret
+docker-compose exec app php artisan storage:link
 ```
 
 ## Rolling migrations
