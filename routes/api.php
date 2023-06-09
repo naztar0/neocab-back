@@ -49,6 +49,7 @@ Route::group(['middleware' => 'auth:api'], function ($router) {
         $router->get('/{user}/azure-schedule', [ScheduleController::class, 'getAzureSchedule']);
         $router->get('/{user}/attendance', [AttendanceLogController::class, 'getUserAttendanceLogs']);
         $router->get('/{user}/notifications', [NotificationController::class, 'getUserNotifications']);
+        $router->get('/{user}/academic-performance', [UserController::class, 'getAcademicPerformance']);
         $router->post('/{user}/photo', [UserController::class, 'syncPhoto']);
         $router->post('/{user}/avatar', [UserController::class, 'uploadAvatar']);
         $router->post('/{user}/cover', [UserController::class, 'uploadCover']);
