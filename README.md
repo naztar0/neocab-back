@@ -1,4 +1,4 @@
-# StudCab Backend
+# NeoCab Backend
 
 ## Environment setup
 
