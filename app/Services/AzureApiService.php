@@ -50,6 +50,10 @@ class AzureApiService
         return $this->graphApp;
     }
 
+    /**
+     * @throws GuzzleException
+     * @throws GraphException
+     */
     public function getUser(string $id): GraphUser
     {
         return $this->app->createRequest('GET', "/users/$id")
@@ -75,6 +79,9 @@ class AzureApiService
         return null;
     }
 
+    /**
+     * @throws GraphException
+     */
     public function getUserCalendarEvents(User $user): array
     {
         $start = now()->subWeek()->startOfWeek()->toIso8601String();
@@ -87,10 +94,18 @@ class AzureApiService
             'startDateTime' => $start,
             'endDateTime' => $end,
         ];
-        $calendar = $this->app->createRequest('GET',
-            "/users/$user->azure_id/calendar/calendarView?".http_build_query($params))
-            ->setReturnType(GraphEvent::class)->execute();
+        try {
+            $calendar = $this->app->createRequest('GET',
+                "/users/$user->azure_id/calendar/calendarView?".http_build_query($params))
+                ->setReturnType(GraphEvent::class)->execute();
 
-        return $calendar ?: [];
+            return $calendar ?: [];
+        } catch (GuzzleException $e) {
+            if ($e->getCode() === 404) {
+                return [];
+            }
+        }
+
+        return [];
     }
 }
