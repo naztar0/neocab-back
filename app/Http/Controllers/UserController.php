@@ -48,6 +48,12 @@ class UserController extends Controller
         return response($this->service->getSyllabus($user, $semester));
     }
 
+    public function getAcademicPerformance(User $user): Response
+    {
+        $this->authorize('view', $user);
+        return response($this->service->getAcademicPerformance($user));
+    }
+
     public function uploadAvatar(UploadImageRequest $request, User $user, UserService $userService): Response
     {
         $this->authorize('update', $user);
