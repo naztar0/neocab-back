@@ -130,6 +130,7 @@ class UserService
     private function getContractRating(User $user, int $semester, array $result): array
     {
         $userRecordBook = $user->recordBooks()->with('syllabus.subject.department')
+            ->where('mark', '>', 0)
             ->whereHas('syllabus', function ($query) use ($semester) {
                 $query->where('semester', $semester);
             })->get();
@@ -144,13 +145,26 @@ class UserService
         $comment = '(';
 
         foreach ($userRecordBook as $record) {
-            $totalMark += ($record->mark ?? 0) * $record->syllabus->credit;
+            $totalMark += $record->mark * $record->syllabus->credit;
             $comment .= " ($record->mark × " . $record->syllabus->credit . ') +';
         }
 
         $comment = substr($comment, 0, -1) . ") × $coefficient / $totalCredits";
         $totalMark = round($totalMark * $coefficient / $totalCredits, 2);
-        $data = ['user_id' => $user->id, 'mark' => strval($totalMark), 'comment' => $comment];
+        $data = [
+            'user_id' => $user->id,
+            'mark' => strval($totalMark),
+            'comment' => $comment,
+            'semester' => $semester,
+            'user' => $user,
+            'id' => 0,
+            'name' => null,
+            'group' => null,
+            'student_id' => null,
+            'speciality_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
 
         for ($i = 0; $i < count($result); $i++) {
             if ($result[$i]['mark'] <= $totalMark) {
