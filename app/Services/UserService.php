@@ -6,6 +6,7 @@ use App\Filters\AttendanceFilters;
 use App\Models\AttendanceLog;
 use App\Models\Group;
 use App\Models\Rating;
+use App\Models\RecordBook;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -273,5 +274,70 @@ class UserService
         );
 
         return $result->toArray();
+    }
+
+    public function getAcademicPerformance(User $user): array
+    {
+        $recordBookAverageMarksBySemester = RecordBook::query()
+            ->join('syllabuses', 'record_books.syllabus_id', '=', 'syllabuses.id')
+            ->select('syllabuses.semester', DB::raw('ROUND(AVG(mark), 2) as mark'))
+            ->where('user_id', $user->id)
+            ->groupBy('syllabuses.semester')
+            ->orderBy('syllabuses.semester')
+            ->get()->toArray();
+
+        $specialityId = $user->group->specialization->department->program->speciality->id;
+
+        $ratingTotalCountBuilder = Rating::query()
+            ->selectRaw('COUNT(*)')
+            ->whereRaw('semester = semester')
+            ->where(function($query) use ($specialityId) {
+                $query->whereHas(
+                    'user.group.specialization.department.program.speciality',
+                    function($q) use ($specialityId) {
+                        $q->whereRaw("id = $specialityId");
+                    })->orWhereRaw("speciality_id = $specialityId");
+            });
+
+        $ratingTotalCountQuery = $ratingTotalCountBuilder
+            ->toSql();
+
+        $ratingPositionQuery = $ratingTotalCountBuilder
+            ->whereRaw("mark > (SELECT mark FROM ratings WHERE user_id = $user->id AND semester = semester)")
+            ->toSql();
+
+        if ($user->payment == $user::PAYMENT_BUDGET) {
+            $ratingsBySemester = Rating::query()
+                ->join('users', 'ratings.user_id', '=', 'users.id')
+                ->join('groups', 'users.group_id', '=', 'groups.id')
+                ->join('specializations', 'groups.specialization_id', '=', 'specializations.id')
+                ->join('departments', 'specializations.department_id', '=', 'departments.id')
+                ->join('programs', 'departments.program_id', '=', 'programs.id')
+                ->join('specialities', 'programs.speciality_id', '=', 'specialities.id')
+                ->select('semester',
+                    DB::raw("($ratingPositionQuery) + 1 AS position"),
+                    DB::raw("($ratingTotalCountQuery) AS total_count"))
+                ->where('specialities.id', $specialityId)
+                ->groupBy('semester')
+                ->orderBy('semester')
+                ->get()->toArray();
+            foreach ($ratingsBySemester as &$rating) {
+                $rating['percentage'] = round($rating['position'] * 100 / $rating['total_count']);
+            }
+        } else {
+            $ratingsBySemester = [];
+        }
+
+        $attendances = $user->attendanceLogs()
+            ->selectRaw('DATE_FORMAT(date, \'%Y-%m\') as date, COUNT(*) as count')
+            ->groupByRaw('DATE_FORMAT(date, \'%Y-%m\')')
+            ->orderByRaw('DATE_FORMAT(date, \'%Y-%m\')')
+            ->get()->toArray();
+
+        return [
+            'record_book_marks' => $recordBookAverageMarksBySemester,
+            'rating_marks' => $ratingsBySemester,
+            'attendances' => $attendances,
+        ];
     }
 }
