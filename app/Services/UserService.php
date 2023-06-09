@@ -187,7 +187,7 @@ class UserService
 
     public function getGroupAttendanceLogs(Group $group, AttendanceFilters $filters): array
     {
-        $attendances = AttendanceLog::query()
+        $selectQuery = AttendanceLog::query()
             ->join('schedule_subjects', 'attendance_logs.schedule_subject_id', '=', 'schedule_subjects.id')
             ->join('users', 'attendance_logs.user_id', '=', 'users.id')
             ->join('groups', 'users.group_id', '=', 'groups.id')
@@ -215,9 +215,9 @@ class UserService
                 'users.role as user_role',
             )
             ->orderByDesc('attendance_logs.date')
-            ->get()->forPage($filters->pageNum, $filters->itemsNum);
+            ->get();
 
-        $result = new LengthAwarePaginator($attendances->groupBy('date')->map(
+        $mappedQuery = $selectQuery->groupBy('date')->map(
             function($items) {
                 $attendances = [];
 
@@ -263,8 +263,11 @@ class UserService
                     $attendances[$item->id]['users'][] = $user;
                 }
                 return array_values($attendances);
-            })->flatten(1),
-            $attendances->count(),
+            })->flatten(1);
+
+        $result = new LengthAwarePaginator(
+            $mappedQuery->forPage($filters->pageNum, $filters->itemsNum)->values(),
+            $mappedQuery->count(),
             $filters->itemsNum,
             $filters->pageNum,
         );
