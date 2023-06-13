@@ -1,0 +1,59 @@
+version: "3"
+services:
+  app:
+    build:
+      context: docker/dev/app
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./:/var/www/html
+    networks:
+      - app-net
+    depends_on:
+      - db
+  db:
+    build:
+      context: docker/dev/db
+      dockerfile: Dockerfile
+    ports:
+      - "${FORWARD_DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: "${DB_DATABASE}"
+      MYSQL_USER: "${DB_USERNAME}"
+      MYSQL_PASSWORD: "${DB_PASSWORD}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - "database:/var/lib/mysql"
+    networks:
+      - app-net
+  web:
+    build:
+      context: docker/dev/nginx
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/dev/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-net
+  cache:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "${FORWARD_REDIS_PORT:-6379}:6379"
+    environment:
+      REDIS_PASSWORD: "${REDIS_PASSWORD}"
+    networks:
+      - app-net
+networks:
+  app-net:
+    driver: bridge
+volumes:
+  database:
+    driver: local

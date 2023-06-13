@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class RecordBook extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'user_id',
+        'syllabus_id',
+        'mark_id',
+        'mark',
+        'debt_date',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function syllabus()
+    {
+        return $this->belongsTo(Syllabus::class);
+    }
+}
