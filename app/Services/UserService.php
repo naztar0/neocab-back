@@ -183,11 +183,11 @@ class UserService
             ->where('date', '>=', $startDate)
             ->orderByDesc('date')->get()->toArray();
 
-        $result['history'] = $user->attendanceLogs()->select('date', DB::raw('COUNT(*) as count'))
+        $result['history'] = $user->attendanceLogs()->select('date', DB::raw('COUNT(*) AS count'))
             ->where('date', '>=', $startDate)
             ->groupBy('date')->orderByDesc('date')->get()->toArray();
 
-        $result['most_visited'] = Subject::query()->select('subjects.title', DB::raw('COUNT(attendance_logs.id) as count'))
+        $result['most_visited'] = Subject::query()->select('subjects.title', DB::raw('COUNT(attendance_logs.id) AS count'))
             ->join('schedule_subjects', 'subjects.id', '=', 'schedule_subjects.subject_id')
             ->join('attendance_logs', 'schedule_subjects.id', '=', 'attendance_logs.schedule_subject_id')
             ->where('attendance_logs.user_id', $user->id)
@@ -212,22 +212,22 @@ class UserService
             ->select(
                 'attendance_logs.date',
                 'schedule_subjects.*',
-                'subjects.id as subject_id',
-                'subjects.title as subject_title',
-                'subjects.notes as subject_notes',
-                'schedules.id as schedule_id',
-                'schedules.group_id as schedule_group_id',
-                'schedules.week as schedule_week',
-                'schedules.description as schedule_description',
-                'users.id as user_id',
-                'users.email as user_email',
-                'users.first_name as user_first_name',
-                'users.last_name as user_last_name',
-                'users.middle_name as user_middle_name',
-                'users.student_id as user_student_id',
-                'users.telegram_id as user_telegram_id',
-                'users.azure_id as user_azure_id',
-                'users.role as user_role',
+                'subjects.id AS subject_id',
+                'subjects.title AS subject_title',
+                'subjects.notes AS subject_notes',
+                'schedules.id AS schedule_id',
+                'schedules.group_id AS schedule_group_id',
+                'schedules.week AS schedule_week',
+                'schedules.description AS schedule_description',
+                'users.id AS user_id',
+                'users.email AS user_email',
+                'users.first_name AS user_first_name',
+                'users.last_name AS user_last_name',
+                'users.middle_name AS user_middle_name',
+                'users.student_id AS user_student_id',
+                'users.telegram_id AS user_telegram_id',
+                'users.azure_id AS user_azure_id',
+                'users.role AS user_role',
             )
             ->orderByDesc('attendance_logs.date')
             ->get();
@@ -294,7 +294,7 @@ class UserService
     {
         $recordBookAverageMarksBySemester = RecordBook::query()
             ->join('syllabuses', 'record_books.syllabus_id', '=', 'syllabuses.id')
-            ->select('syllabuses.semester', DB::raw('ROUND(AVG(mark), 2) as mark'))
+            ->select('syllabuses.semester', DB::raw('ROUND(AVG(mark), 2) AS mark'))
             ->where('user_id', $user->id)
             ->groupBy('syllabuses.semester')
             ->orderBy('syllabuses.semester')
@@ -304,7 +304,7 @@ class UserService
 
         $ratingTotalCountBuilder = Rating::query()
             ->selectRaw('COUNT(*)')
-            ->whereRaw('semester = semester')
+            ->whereRaw('semester = sem')
             ->where(function($query) use ($specialityId) {
                 $query->whereHas(
                     'user.group.specialization.department.program.speciality',
@@ -317,7 +317,7 @@ class UserService
             ->toSql();
 
         $ratingPositionQuery = $ratingTotalCountBuilder
-            ->whereRaw("mark > (SELECT mark FROM ratings WHERE user_id = $user->id AND semester = semester)")
+            ->whereRaw("mark > (SELECT mark FROM ratings WHERE user_id = $user->id AND semester = sem)")
             ->toSql();
 
         if ($user->payment == $user::PAYMENT_BUDGET) {
@@ -328,22 +328,25 @@ class UserService
                 ->join('departments', 'specializations.department_id', '=', 'departments.id')
                 ->join('programs', 'departments.program_id', '=', 'programs.id')
                 ->join('specialities', 'programs.speciality_id', '=', 'specialities.id')
-                ->select('semester',
+                ->select(
+                    DB::raw('semester AS sem'),
                     DB::raw("($ratingPositionQuery) + 1 AS position"),
                     DB::raw("($ratingTotalCountQuery) AS total_count"))
                 ->where('specialities.id', $specialityId)
                 ->groupBy('semester')
                 ->orderBy('semester')
                 ->get()->toArray();
-            foreach ($ratingsBySemester as &$rating) {
+            foreach ($ratingsBySemester AS &$rating) {
                 $rating['percentage'] = round($rating['position'] * 100 / $rating['total_count']);
+                $rating['semester'] = $rating['sem'];
+                unset($rating['sem']);
             }
         } else {
             $ratingsBySemester = [];
         }
 
         $attendances = $user->attendanceLogs()
-            ->selectRaw('DATE_FORMAT(date, \'%Y-%m\') as date, COUNT(*) as count')
+            ->selectRaw('DATE_FORMAT(date, \'%Y-%m\') AS date, COUNT(*) AS count')
             ->groupByRaw('DATE_FORMAT(date, \'%Y-%m\')')
             ->orderByRaw('DATE_FORMAT(date, \'%Y-%m\')')
             ->get()->toArray();
