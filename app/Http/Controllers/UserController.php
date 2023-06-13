@@ -48,6 +48,12 @@ class UserController extends Controller
         return response($this->service->getSyllabus($user, $semester));
     }
 
+    public function getContract(User $user): Response
+    {
+        $this->authorize('view', $user);
+        return response($this->service->getContract($user));
+    }
+
     public function getAcademicPerformance(User $user): Response
     {
         $this->authorize('view', $user);
