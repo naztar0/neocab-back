@@ -46,6 +46,7 @@ Route::group(['middleware' => 'auth:api'], function ($router) {
         $router->get('/{user}/record-book/{semester}', [UserController::class, 'getRecordBook']);
         $router->get('/{user}/rating/{semester}', [UserController::class, 'getRating']);
         $router->get('/{user}/syllabus/{semester}', [UserController::class, 'getSyllabus']);
+        $router->get('/{user}/contract', [UserController::class, 'getContract']);
         $router->get('/{user}/azure-schedule', [ScheduleController::class, 'getAzureSchedule']);
         $router->get('/{user}/attendance', [AttendanceLogController::class, 'getUserAttendanceLogs']);
         $router->get('/{user}/notifications', [NotificationController::class, 'getUserNotifications']);
