@@ -354,4 +354,15 @@ class UserService
             'attendances' => $attendances,
         ];
     }
+
+    public function getContract(User $user): array
+    {
+        $contract = $user->contract()->with('payments', function ($query) {
+            $query->orderByDesc('created_at');
+        })->first();
+
+        $contract['total'] = $contract['payments']->sum('amount');
+
+        return $contract->toArray();
+    }
 }
