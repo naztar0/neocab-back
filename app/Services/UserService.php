@@ -100,6 +100,7 @@ class UserService
             }
             $joinUrl = $event->getOnlineMeeting() ? $event->getOnlineMeeting()->getJoinUrl() : null;
             $schedule[] = [
+                'id' => $event->getId(),
                 'subject' => $event->getSubject(),
                 'start' => $event->getStart()->getDateTime(),
                 'end' => $event->getEnd()->getDateTime(),
