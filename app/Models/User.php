@@ -59,7 +59,7 @@ class User extends Authenticatable implements JWTSubject
 
     public const LOCALE_EN = 'en';
     public const LOCALE_RU = 'ru';
-    public const LOCALE_UA = 'ua';
+    public const LOCALE_UK = 'uk';
 
     public const TRAIN_LEVEL_BACHELOR = 'bachelor';
     public const TRAIN_LEVEL_MASTER = 'master';

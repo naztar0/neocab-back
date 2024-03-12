@@ -26,7 +26,7 @@ return new class () extends Migration {
             $table->uuid('azure_id')->nullable()->default(null);
             $table->foreignId('group_id')->nullable()->default(null)->constrained()->nullOnDelete();
             $table->enum('role', ['student', 'headman', 'professor', 'admin'])->default('student');
-            $table->enum('locale', ['en', 'ru', 'ua'])->default('ua');
+            $table->enum('locale', ['en', 'ru', 'uk'])->default('uk');
             $table->unsignedSmallInteger('year')->nullable()->default(null);
             $table->enum('train_level', ['bachelor', 'master'])->nullable()->default(null);
             $table->enum('train_form', ['full-time', 'extramural'])->nullable()->default(null);
