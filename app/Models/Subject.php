@@ -38,5 +38,10 @@ class Subject extends Model
         return $this->belongsTo(Department::class);
     }
 
+    public function syllabuses()
+    {
+        return $this->hasMany(Syllabus::class);
+    }
+
     public $timestamps = false;
 }
