@@ -31,7 +31,7 @@ class ScheduleController extends Controller
     public function getGroupSchedules(Group $group): Response
     {
         $this->authorize('getGroupSchedules', $group);
-        return response($group->schedules()->with('scheduleSubjects.subject')->get());
+        return response($group->schedules()->with('scheduleSubjects.subject.professor')->get());
     }
 
     public function createGroupSchedule(Group $group): Response
