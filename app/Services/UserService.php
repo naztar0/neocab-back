@@ -53,6 +53,7 @@ class UserService
     public function getRecordBook(User $user, int $semester): array
     {
         return $user->recordBooks()->with('syllabus.subject.department')
+            -with('syllabus.subject.professor')
             ->whereHas('syllabus', function ($query) use ($semester) {
                 $query->where('semester', $semester);
             })->get()->toArray();
@@ -81,7 +82,9 @@ class UserService
 
     public function getSyllabus(User $user, int $semester): array
     {
-        return $user->group->syllabuses()->with('subject.department')
+        return $user->group->syllabuses()
+            ->with('subject.department')
+            ->with('subject.professor')
             ->where('semester', $semester)->get()->toArray();
     }
 
