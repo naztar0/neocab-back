@@ -182,13 +182,19 @@ class UserService
     public function getUserAttendanceLogs(User $user): array
     {
         $startDate = now()->startOfYear();
+        $endDate = now()->endOfYear();
         $result = [];
-        $result['attendance'] = $user->attendanceLogs()->with('scheduleSubject.subject')
+        $result['attendance'] = $user->attendanceLogs()
+            ->with('scheduleSubject.subject.department')
+            ->with('scheduleSubject.subject.professor')
             ->where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate)
             ->orderByDesc('date')->get()->toArray();
 
-        $result['history'] = $user->attendanceLogs()->select('date', DB::raw('COUNT(*) AS count'))
+        $result['history'] = $user->attendanceLogs()
+            ->select('date', DB::raw('COUNT(*) AS count'))
             ->where('date', '>=', $startDate)
+            ->where('date', '<=', $endDate)
             ->groupBy('date')->orderByDesc('date')->get()->toArray();
 
         $result['most_visited'] = Subject::query()->select('subjects.title', DB::raw('COUNT(attendance_logs.id) AS count'))
@@ -196,6 +202,7 @@ class UserService
             ->join('attendance_logs', 'schedule_subjects.id', '=', 'attendance_logs.schedule_subject_id')
             ->where('attendance_logs.user_id', $user->id)
             ->where('attendance_logs.date', '>=', $startDate)
+            ->where('attendance_logs.date', '<=', $endDate)
             ->groupBy('subjects.id', 'subjects.title')
             ->orderByDesc('count')
             ->limit(10)
