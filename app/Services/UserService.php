@@ -196,7 +196,7 @@ class UserService
             ->join('attendance_logs', 'schedule_subjects.id', '=', 'attendance_logs.schedule_subject_id')
             ->where('attendance_logs.user_id', $user->id)
             ->where('attendance_logs.date', '>=', $startDate)
-            ->groupBy('subjects.id')
+            ->groupBy('subjects.id', 'subjects.title')
             ->orderByDesc('count')
             ->limit(10)
             ->get()->toArray();
